@@ -97,6 +97,8 @@ const Chatblock = () => {
     const image = document.getElementById('image')!
     const getfile = (e : any) => {
       const file = e.target.files[0]
+      if (!file)
+        return;
       fileReader.readAsDataURL(file)
     }
     var fileReader = new FileReader()
