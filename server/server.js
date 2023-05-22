@@ -9,16 +9,58 @@ const SocketIO = require('socket.io')(http, {
   }
 })
 
+var users = []
+
 app.use(cors())
 
 SocketIO.on('connection', (socket) => {
-  console.log(`${socket.id} user just connected!`)
-  socket.on('disconnection', () => {
-    console.log('A user disconnected')
+
+
+  socket.on('disconnect', () => {
+    console.log("disconnect")
+    users = users.filter((user) => user.id !== socket.id)
   })
-  socket.on('send-message', (message) => {
-    socket.broadcast.emit('receive-message', message)
+
+  socket.on('join-lobby', (name, id) => {
+    users.push({ name: name, id: id })
+    socket.emit('join-lobby', name, id)
   })
+
+  socket.on('get-current-users', cb => {
+    cb(users)
+  })
+
+  socket.on('send-message', (message, username, userid, to) => {
+    if (to === "Multi")
+      socket.to("Multiplayer").emit('receive-message', message, username, userid, "Multiplayer")
+    else if (to !== undefined)
+      socket.to(to).emit('receive-message', message, username, userid, "One")
+  })
+
+  socket.on('send-image', (image, sendername, senderid, to) => {
+    console.log('get image')
+    if (to === "Multi")
+      socket.to("Multiplayer").emit('receive-image', image, sendername, senderid, "Multiplayer")
+    else if (to !== undefined)
+      socket.to(to).emit('receive-image', image, sendername, senderid, "One")
+  })
+
+  socket.on('join-chat', (username, userid, to) => {
+    if (to === "Multi")
+      socket.to("Multiplayer").emit('join-chat', username, userid, "Multiplayer")
+    else if (to !== undefined)
+      socket.to(to).emit('join-chat', username, userid, "One")
+  })
+
+  socket.on('join-multiplayer-chat', (room) => {
+    console.log(room)
+    socket.join(room)
+  })
+
+  socket.on('leave-multiplayer-chat', (room) => {
+    socket.leave(room)
+  })
+
 })
 
 app.get('/test', (req, res) => {

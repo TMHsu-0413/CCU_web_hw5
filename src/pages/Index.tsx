@@ -1,10 +1,12 @@
 import React, { useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from "../context/SocketContext";
+import { useUser } from "../context/UserContext";
 
 const Index = () => {
   const navigate = useNavigate();
   const { socket } = useSocket()
+  const { setUsers } : any = useUser()
   const inputRef = useRef<HTMLInputElement>(null);
   socket.on("connect", () => {
     console.log(`You connected with id: ${socket.id}`)
@@ -13,9 +15,24 @@ const Index = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (inputRef.current !== null) {
-      localStorage.setItem('userName', inputRef.current.value)
+      sessionStorage.setItem('name',inputRef.current.value)
+      sessionStorage.setItem('id',socket.id)
     }
-    navigate("/hw5/Chat")
+    socket.emit('join-lobby',inputRef.current?.value,socket.id)
+    socket.on('join-lobby',(name,id) => {
+      setUsers((prev : any) => {
+        return (
+        [
+          ...prev,
+          {
+            name:name,
+            id:id
+          }
+        ]
+        )
+      })
+    })
+    navigate("/hw5/One")
   }
   return (
     <form className="bg-red-100 w-screen h-screen flex justify-center items-center" onSubmit={(e) => handleSubmit(e)}>
