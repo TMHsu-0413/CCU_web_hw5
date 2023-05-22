@@ -25,7 +25,7 @@ const Chatblock = () => {
 
   const displayOwnImage = (image:string) => {
     const imgDiv: any = document.createElement("img")
-    imgDiv.className = "bg-green-200 self-end my-2 mr-6 mx-w-md mx-h-md object-contain";
+    imgDiv.className = "bg-green-200 self-end my-2 mr-6 w-full w-96 object-contain";
     imgDiv.src = image
     let el:(HTMLElement | undefined) = document.getElementById("Content")!
     el.append(imgDiv)
@@ -52,7 +52,7 @@ const Chatblock = () => {
       const imgDiv: any = document.createElement("img")
       nameDiv.className= "text-white text-base text-left ml-2"
       nameDiv.textContent = name
-      imgDiv.className = "bg-white self-start my-2 ml-6 mx-w-md mx-h-md object-contain";
+      imgDiv.className = "bg-white self-start my-2 ml-6 w-full w-96 object-contain";
       imgDiv.src = image
       let el:(HTMLElement | undefined) = document.getElementById("Content")!
       el.append(nameDiv)
