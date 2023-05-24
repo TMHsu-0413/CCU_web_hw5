@@ -5,8 +5,8 @@ import { useSocket } from "../context/SocketContext";
 const Chatblock = () => {
   const textRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
-  const {id} = useParams()
-  const {socket} = useSocket()
+  const { id } = useParams()
+  const { socket } = useSocket()
   const displayOwnMessage = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       const message: (string | undefined) = textRef.current?.value
@@ -14,88 +14,92 @@ const Chatblock = () => {
       div.className = "bg-green-200 self-end rounded p-3 my-2 mr-6 break-words text-left";
       div.style = "max-width:80%;";
       div.textContent = message
-      let el:(HTMLElement | undefined) = document.getElementById("Content")!
+      let el: (HTMLElement | undefined) = document.getElementById("Content")!
       el.append(div)
       el.scrollTop = el.scrollHeight
-      socket.emit('send-message',message,sessionStorage.getItem('name'),sessionStorage.getItem('id'),id)
+      socket.emit('send-message', message, sessionStorage.getItem('name'), sessionStorage.getItem('id'), id)
       if (textRef.current !== null)
         textRef.current.value = " ";
     }
   }
 
-  const displayOwnImage = (image:string) => {
+  const displayOwnImage = (image: string) => {
     const imgDiv: any = document.createElement("img")
-    imgDiv.className = "bg-green-200 self-end my-2 mr-6 w-full w-96 object-contain";
+    imgDiv.className = "bg-green-200 self-end my-2 mr-6 mx-w-full w-96 object-contain";
     imgDiv.src = image
-    let el:(HTMLElement | undefined) = document.getElementById("Content")!
+    let el: (HTMLElement | undefined) = document.getElementById("Content")!
     el.append(imgDiv)
     el.scrollTop = el.scrollHeight
   }
 
   useEffect(() => {
-    const displayOthersMessage = (message:string, name:string) => {
+    const displayOthersMessage = (message: string, name: string) => {
       const nameDiv: any = document.createElement("div")
       const messageDiv: any = document.createElement("div")
-      nameDiv.className= "text-white text-base text-left ml-2"
+      nameDiv.className = "text-white text-base text-left ml-2"
       nameDiv.textContent = name
       messageDiv.className = "bg-white self-start rounded p-3 my-2 ml-6 break-words text-left";
       messageDiv.style = "max-width:80%;";
       messageDiv.textContent = message
-      let el:(HTMLElement | undefined) = document.getElementById("Content")!
+      let el: (HTMLElement | undefined) = document.getElementById("Content")!
       el.append(nameDiv)
       el.append(messageDiv)
       el.scrollTop = el.scrollHeight
     }
 
-    const displayOthersImage = (image:string, name:string) => {
+    const displayOthersImage = (image: string, name: string) => {
       const nameDiv: any = document.createElement("div")
       const imgDiv: any = document.createElement("img")
-      nameDiv.className= "text-white text-base text-left ml-2"
+      nameDiv.className = "text-white text-base text-left ml-2"
       nameDiv.textContent = name
-      imgDiv.className = "bg-white self-start my-2 ml-6 w-full w-96 object-contain";
+      imgDiv.className = "bg-white self-start my-2 ml-6 mx-w-full w-96 object-contain";
       imgDiv.src = image
-      let el:(HTMLElement | undefined) = document.getElementById("Content")!
+      let el: (HTMLElement | undefined) = document.getElementById("Content")!
       el.append(nameDiv)
       el.append(imgDiv)
       el.scrollTop = el.scrollHeight
     }
 
-    const joinChatroomMessage = (name: string) => {
+    const NotifyMessage = (name: string, message: string) => {
       const div: any = document.createElement("div")
-      div.className= "self-center rounded bg-gray-500 my-2 p-1 break-words"
+      div.className = "self-center rounded bg-gray-500 my-2 p-1 break-words"
       div.style = "max-width:80%;";
-      div.textContent = name + " has joined Chatroom."
-      let el:(HTMLElement | undefined) = document.getElementById("Content")!
+      div.textContent = name + " has " + message + " the Chatroom."
+      let el: (HTMLElement | undefined) = document.getElementById("Content")!
       el.append(div)
       el.scrollTop = el.scrollHeight
     }
 
-    socket.on('receive-message',(message,sendername,senderid,state) => {
+    socket.on('receive-message', (message, sendername, senderid, state) => {
       if ((state === 'Multiplayer') || (id === senderid))
-        displayOthersMessage(message,sendername)
+        displayOthersMessage(message, sendername)
     })
 
-    socket.on('receive-image',(image,sendername,senderid,state) => {
+    socket.on('receive-image', (image, sendername, senderid, state) => {
       if ((state === 'Multiplayer') || (id === senderid))
-        displayOthersImage(image,sendername)
+        displayOthersImage(image, sendername)
     })
 
-    socket.on('join-chat',(sendername,senderid,state) => {
+    socket.on('join-chat', (sendername, senderid, state) => {
       if ((state === 'Multiplayer') || (id === senderid))
-        joinChatroomMessage(sendername)
+        NotifyMessage(sendername, "join")
     })
 
-    const content : (HTMLElement | null) = document.getElementById('Content')!
+    socket.on('leave-chat', (sendername, senderid, state) => {
+      if ((state === 'Multiplayer') || (id === senderid))
+        NotifyMessage(sendername, "leave")
+
+    })
+    const content: (HTMLElement | null) = document.getElementById('Content')!
     const myname = sessionStorage.getItem('name')!, myid = sessionStorage.getItem('id')!
-    // content.innerHTML = ""
-    joinChatroomMessage(myname)
-    socket.emit('join-chat',myname,myid,id)
-
+    content.innerHTML = ""
+    NotifyMessage(myname, "join")
+    socket.emit('join-chat', myname, myid, id)
 
 
     // send image on chat
     const image = document.getElementById('image')!
-    const getfile = (e : any) => {
+    const getfile = (e: any) => {
       const file = e.target.files[0]
       if (!file)
         return;
@@ -105,19 +109,20 @@ const Chatblock = () => {
 
     const transformImage = () => {
       const dataURL = fileReader.result
-      socket.emit('send-image',dataURL,myname,myid,id)
+      socket.emit('send-image', dataURL, myname, myid, id)
       displayOwnImage(dataURL as string)
     }
 
-    image.addEventListener("change",getfile)
-    fileReader.addEventListener("load",transformImage)
+    image.addEventListener("change", getfile)
+    fileReader.addEventListener("load", transformImage)
 
     return (() => {
+      socket.emit('leave-chat', myname, myid, id)
       socket.removeAllListeners()
-      image.removeEventListener("change",getfile)
-      fileReader.removeEventListener("load",transformImage)
+      image.removeEventListener("change", getfile)
+      fileReader.removeEventListener("load", transformImage)
     })
-  },[id])
+  }, [id])
 
   return (
     <div className="flex flex-col w-full">

@@ -7,13 +7,13 @@ import Router from './route/Router';
 
 function App() {
   return (
-    <UserProvider>
-      <SocketProvider>
+    <SocketProvider>
+      <UserProvider>
         <div className="App w-screen h-screen">
           <RouterProvider router={Router} />
         </div>
-      </SocketProvider>
-    </UserProvider>
+      </UserProvider>
+    </SocketProvider>
   );
 }
 

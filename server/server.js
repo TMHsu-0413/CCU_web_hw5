@@ -2,24 +2,21 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const cors = require('cors')
-const { Server } = require("socket.io");
 const SocketIO = require('socket.io')(http, {
   cors: {
     origin: 'http://localhost:3000'
   }
 })
-
 var users = []
 
 app.use(cors())
 
 SocketIO.on('connection', (socket) => {
 
-
   socket.on('disconnect', () => {
-    console.log("disconnect")
     users = users.filter((user) => user.id !== socket.id)
   })
+
 
   socket.on('join-lobby', (name, id) => {
     users.push({ name: name, id: id })
@@ -50,6 +47,13 @@ SocketIO.on('connection', (socket) => {
       socket.to("Multiplayer").emit('join-chat', username, userid, "Multiplayer")
     else if (to !== undefined)
       socket.to(to).emit('join-chat', username, userid, "One")
+  })
+
+  socket.on('leave-chat', (username, userid, to) => {
+    if (to === "Multi")
+      socket.to("Multiplayer").emit('leave-chat', username, userid, "Multiplayer")
+    else if (to !== undefined)
+      socket.to(to).emit('leave-chat', username, userid, "One")
   })
 
   socket.on('join-multiplayer-chat', (room) => {

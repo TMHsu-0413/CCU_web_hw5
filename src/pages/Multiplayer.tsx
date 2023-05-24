@@ -12,7 +12,7 @@ const Multiplayer = () => {
   })
   return (
     <div className="flex flex-col h-full">
-      <Header />
+      <Header Chat="Multi" />
       <div className="flex flex-grow overflow-hidden">
         <Chatblock />
       </div>

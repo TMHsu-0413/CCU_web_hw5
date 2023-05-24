@@ -13,7 +13,7 @@ const One2one = () => {
   })
   return (
     <div className="flex flex-col h-full">
-      <Header />
+      <Header Chat="One" />
       <div className="flex flex-grow overflow-hidden">
         <Sidebar />
         <Chatblock />
