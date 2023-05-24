@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
+import {BsCardImage} from 'react-icons/bs'
 
 const Chatblock = () => {
   const textRef = useRef<HTMLInputElement>(null);
@@ -88,7 +89,6 @@ const Chatblock = () => {
     socket.on('leave-chat', (sendername, senderid, state) => {
       if ((state === 'Multiplayer') || (id === senderid))
         NotifyMessage(sendername, "leave")
-
     })
     const content: (HTMLElement | null) = document.getElementById('Content')!
     const myname = sessionStorage.getItem('name')!, myid = sessionStorage.getItem('id')!
@@ -132,7 +132,7 @@ const Chatblock = () => {
         <input type="text" ref={textRef} onKeyDown={(e) => displayOwnMessage(e)} className="w-full h-10 bg-gray-600 outline-none text-white :border-none" placeholder="輸入訊息" />
         <div id="Function" className="flex justify-start gap-2">
           <button>Emoji</button>
-          <label className="border-1 inline-block px-3 py-6 cursor-pointer">img<input className="hidden" type="file" id="image" ref={imageRef} /></label>
+          <label className="border-1 inline-block px-3 py-6 cursor-pointer"><BsCardImage /><input className="hidden" type="file" id="image" ref={imageRef} /></label>
         </div>
       </div>
     </div>

@@ -11,11 +11,18 @@ const Header = (props: any) => {
   const [stream, setStream] = useState(undefined)
   const [video, setVideo] = useState<boolean>(true)
   const [audio, setAudio] = useState<boolean>(true)
-
   const localVideoRef = useRef<any>(null)
   const remoteVideoRef = useRef<any>(null)
 
   useEffect(() => {
+    myPeer.on('call',(call:any) => {
+      console.log(call)
+      if (stream !== undefined)
+        call.answer(stream)
+      call.on('stream', (userVideoStream : any) => {
+        addVideoStream(remoteVideoRef.current,userVideoStream)
+      })
+    })
     return () => {
       if (stream !== undefined) {
         stream.getTracks().forEach((track: any) => {
@@ -23,10 +30,9 @@ const Header = (props: any) => {
         })
       }
     }
-  }, [id, stream])
-
-  const addVideoStream = (video: any, stream: any) => {
-    video.srcObject = stream
+  }, [id,stream,myPeer])
+  const addVideoStream = (video: any, curstream: any) => {
+    video.srcObject = curstream
     video.play()
   }
   const openWebRTC = async () => {
@@ -35,6 +41,12 @@ const Header = (props: any) => {
       audio: true
     })
     addVideoStream(localVideoRef.current, temp_stream)
+
+    const call = myPeer.call(id,temp_stream)
+
+    call.on('stream',(userVideoStream:any) => {
+      addVideoStream(remoteVideoRef.current,userVideoStream)
+    })
 
     setStream(temp_stream)
   }

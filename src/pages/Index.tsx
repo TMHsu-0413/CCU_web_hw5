@@ -1,34 +1,46 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { Peer } from 'peerjs'
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from "../context/SocketContext";
 import { useUser } from "../context/UserContext";
+import { io } from "socket.io-client";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { socket } = useSocket()
-  const { setUsers } : any = useUser()
+  const { socket,setSocket, setmyPeer } = useSocket()
+  const { setUsers }: any = useUser()
   const inputRef = useRef<HTMLInputElement>(null);
-  socket.on("connect", () => {
-    console.log(`You connected with id: ${socket.id}`)
-  })
+
+  useEffect(() => {
+    const socket = io('http://localhost:4000')
+    socket.on("connect", () => {
+      console.log(`You connected with id: ${socket.id}`)
+      sessionStorage.setItem('id',socket.id)
+      const newPeer = new Peer(socket.id,{
+        host: 'localhost',
+        port: 3001
+      })
+      setSocket(socket)
+      setmyPeer(newPeer)
+    })
+  },[])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (inputRef.current !== null) {
-      sessionStorage.setItem('name',inputRef.current.value)
-      sessionStorage.setItem('id',socket.id)
+      sessionStorage.setItem('name', inputRef.current.value)
     }
-    socket.emit('join-lobby',inputRef.current?.value,socket.id)
-    socket.on('join-lobby',(name,id) => {
-      setUsers((prev : any) => {
+    socket.emit('join-lobby', inputRef.current?.value, sessionStorage.getItem('id'))
+    socket.on('join-lobby', (name, id) => {
+      setUsers((prev: any) => {
         return (
-        [
-          ...prev,
-          {
-            name:name,
-            id:id
-          }
-        ]
+          [
+            ...prev,
+            {
+              name: name,
+              id: id
+            }
+          ]
         )
       })
     })

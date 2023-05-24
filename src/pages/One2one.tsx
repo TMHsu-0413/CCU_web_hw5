@@ -6,9 +6,9 @@ import { useSocket } from "../context/SocketContext";
 import { useUser } from "../context/UserContext";
 
 const One2one = () => {
-  const {socket} = useSocket()
-  const {setUsers} : any = useUser()
-   socket.emit('get-current-users', async (user : any) => {
+  const { socket } = useSocket()
+  const { setUsers }: any = useUser()
+  socket.emit('get-current-users', async (user: any) => {
     setUsers(user)
   })
   return (

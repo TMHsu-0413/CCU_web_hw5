@@ -19,6 +19,7 @@ SocketIO.on('connection', (socket) => {
 
 
   socket.on('join-lobby', (name, id) => {
+    console.log(name, id)
     users.push({ name: name, id: id })
     socket.emit('join-lobby', name, id)
   })
@@ -35,7 +36,6 @@ SocketIO.on('connection', (socket) => {
   })
 
   socket.on('send-image', (image, sendername, senderid, to) => {
-    console.log('get image')
     if (to === "Multi")
       socket.to("Multiplayer").emit('receive-image', image, sendername, senderid, "Multiplayer")
     else if (to !== undefined)
@@ -45,8 +45,9 @@ SocketIO.on('connection', (socket) => {
   socket.on('join-chat', (username, userid, to) => {
     if (to === "Multi")
       socket.to("Multiplayer").emit('join-chat', username, userid, "Multiplayer")
-    else if (to !== undefined)
+    else if (to !== undefined) {
       socket.to(to).emit('join-chat', username, userid, "One")
+    }
   })
 
   socket.on('leave-chat', (username, userid, to) => {
@@ -57,7 +58,6 @@ SocketIO.on('connection', (socket) => {
   })
 
   socket.on('join-multiplayer-chat', (room) => {
-    console.log(room)
     socket.join(room)
   })
 
