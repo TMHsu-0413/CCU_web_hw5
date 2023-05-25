@@ -7,6 +7,7 @@ const SocketIO = require('socket.io')(http, {
     origin: 'http://localhost:3000'
   }
 })
+
 var users = []
 
 app.use(cors())

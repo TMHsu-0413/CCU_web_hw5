@@ -13,41 +13,50 @@ const Header = (props: any) => {
   const [audio, setAudio] = useState<boolean>(true)
   const localVideoRef = useRef<any>(null)
   const remoteVideoRef = useRef<any>(null)
-
+ 
   useEffect(() => {
-    myPeer.on('call',(call:any) => {
-      console.log(call)
-      if (stream !== undefined)
-        call.answer(stream)
-      call.on('stream', (userVideoStream : any) => {
-        addVideoStream(remoteVideoRef.current,userVideoStream)
-      })
-    })
     return () => {
       if (stream !== undefined) {
         stream.getTracks().forEach((track: any) => {
           track.stop()
         })
+        setStream(undefined)
       }
     }
   }, [id,stream,myPeer])
+
   const addVideoStream = (video: any, curstream: any) => {
-    video.srcObject = curstream
-    video.play()
+    if(video.paused){
+      video.srcObject = curstream
+      video.play()
+    }
   }
   const openWebRTC = async () => {
     const temp_stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true
     })
+
     addVideoStream(localVideoRef.current, temp_stream)
+
+    myPeer.on('call', (call:any) => {
+      call.answer(temp_stream)
+
+      call.on('stream',(userVideoStream:any) => {
+        addVideoStream(remoteVideoRef.current,userVideoStream)
+      })
+    })
 
     const call = myPeer.call(id,temp_stream)
 
     call.on('stream',(userVideoStream:any) => {
       addVideoStream(remoteVideoRef.current,userVideoStream)
     })
-
+    
+    call.on('close', () => {
+      remoteVideoRef.current.close()
+    })
+    
     setStream(temp_stream)
   }
 
@@ -89,9 +98,9 @@ const Header = (props: any) => {
       {Chat === 'One' && stream !== undefined && video === true && <button onClick={closeCameraOnly}><BsCameraVideoFill /></button>}
       {Chat === 'One' && stream !== undefined && audio === false && <button onClick={openAudioOnly}><BsMicMuteFill /></button>}
       {Chat === 'One' && stream !== undefined && audio === true && <button onClick={closeAudioOnly}><BsMicFill /></button>}
-      <div id="video-grid" className="flex ml-auto w-52">
-        <video ref={localVideoRef} muted/>
-        <video ref={remoteVideoRef} />
+      <div id="video-grid" className="flex ml-auto gap-2">
+        <video ref={localVideoRef} className="w-52" muted/>
+        <video ref={remoteVideoRef} className="w-52" id="remote" />
       </div>
     </div>
   )
