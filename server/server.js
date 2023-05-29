@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const cors = require('cors')
+const fs = require('fs')
 const SocketIO = require('socket.io')(http, {
   cors: {
     origin: 'http://localhost:3000'
@@ -11,6 +12,7 @@ const SocketIO = require('socket.io')(http, {
 var users = []
 
 app.use(cors())
+app.use(express.static('emoji'))
 
 SocketIO.on('connection', (socket) => {
 
@@ -20,7 +22,6 @@ SocketIO.on('connection', (socket) => {
 
 
   socket.on('join-lobby', (name, id) => {
-    console.log(name, id)
     users.push({ name: name, id: id })
     socket.emit('join-lobby', name, id)
   })
@@ -71,6 +72,14 @@ SocketIO.on('connection', (socket) => {
 app.get('/test', (req, res) => {
   res.json({
     message: "hello world"
+  })
+})
+
+app.get('/emoji', (req, res) => {
+  fs.readdir('emoji', (err, files) => {
+    res.json({
+      file: files
+    })
   })
 })
 

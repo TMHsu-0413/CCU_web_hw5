@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BsCameraVideoFill, BsCameraVideoOffFill, BsMicFill, BsMicMuteFill } from 'react-icons/bs'
 import { useSocket } from "../context/SocketContext";
@@ -13,7 +13,7 @@ const Header = (props: any) => {
   const [audio, setAudio] = useState<boolean>(true)
   const localVideoRef = useRef<any>(null)
   const remoteVideoRef = useRef<any>(null)
- 
+
   useEffect(() => {
     return () => {
       if (stream !== undefined) {
@@ -25,12 +25,13 @@ const Header = (props: any) => {
     }
   }, [id,stream,myPeer])
 
-  const addVideoStream = (video: any, curstream: any) => {
+  const addVideoStream = useCallback((video: any, curstream: any) => {
     if(video.paused){
       video.srcObject = curstream
       video.play()
     }
-  }
+  },[])
+
   const openWebRTC = async () => {
     const temp_stream = await navigator.mediaDevices.getUserMedia({
       video: true,
