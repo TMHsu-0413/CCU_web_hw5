@@ -11,14 +11,14 @@ const Index = () => {
   const { setUsers }: any = useUser()
   const inputRef = useRef<HTMLInputElement>(null);
   const socket = io(process.env.REACT_APP_BACK)
-  console.log(123)
   useEffect(() => {
     socket.on("connect", () => {
       console.log(`You connected with id: ${socket.id}`)
       sessionStorage.setItem('id', socket.id)
       const newPeer = new Peer(socket.id, {
+        path: '/peerjs',
         host: 'localhost',
-        port: 3001
+        port: 4000
       })
       setSocket(socket)
       setPeer(newPeer)

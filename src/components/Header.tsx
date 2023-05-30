@@ -55,7 +55,7 @@ const Header = memo((props: any) => {
     })
     
     call.on('close', () => {
-      remoteVideoRef.current.close()
+      remoteVideoRef.current.pause()
     })
     
     setStream(temp_stream)
