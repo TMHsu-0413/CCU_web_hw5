@@ -1,9 +1,9 @@
-import React, { createElement, useEffect, useRef } from "react";
+import React, { memo, createElement, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
 import { BsCardImage, BsFillEmojiSmileFill } from 'react-icons/bs'
 
-const Chatblock = () => {
+const Chatblock = memo(() => {
   const textRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
   const emojiRef = useRef<HTMLDivElement>(null);
@@ -158,7 +158,7 @@ const Chatblock = () => {
   // get emoji list
   useEffect(() => {
     const handleEmoji = (name: any) => {
-      textRef.current.value += "[" + name.split('.')[0] + "]"
+      textRef.current.value += "[" + name.split('.')[0] + "] "
     }
 
     fetch(process.env.REACT_APP_BACK + '/emoji', { method: "GET" }).then((res: any) => {
@@ -197,6 +197,6 @@ const Chatblock = () => {
       </div>
     </div>
   )
-}
+})
 
 export default Chatblock;

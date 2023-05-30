@@ -7,12 +7,12 @@ import { io } from "socket.io-client";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { socket, setSocket, setmyPeer } = useSocket()
+  const { setSocket, setPeer } = useSocket()
   const { setUsers }: any = useUser()
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const socket = io(process.env.REACT_APP_BACK)
+  console.log(123)
   useEffect(() => {
-    const socket = io(process.env.REACT_APP_BACK)
     socket.on("connect", () => {
       console.log(`You connected with id: ${socket.id}`)
       sessionStorage.setItem('id', socket.id)
@@ -21,7 +21,7 @@ const Index = () => {
         port: 3001
       })
       setSocket(socket)
-      setmyPeer(newPeer)
+      setPeer(newPeer)
     })
   }, [])
 

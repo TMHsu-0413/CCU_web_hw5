@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { BsCameraVideoFill, BsCameraVideoOffFill, BsMicFill, BsMicMuteFill } from 'react-icons/bs'
 import { useSocket } from "../context/SocketContext";
 
-const Header = (props: any) => {
+const Header = memo((props: any) => {
   const { Chat } = props
   const navigate = useNavigate();
   const { socket, myPeer } = useSocket()
@@ -23,14 +23,14 @@ const Header = (props: any) => {
         setStream(undefined)
       }
     }
-  }, [id,stream,myPeer])
+  }, [id,stream])
 
-  const addVideoStream = useCallback((video: any, curstream: any) => {
+  const addVideoStream = (video: any, curstream: any) => {
     if(video.paused){
       video.srcObject = curstream
       video.play()
     }
-  },[])
+  }
 
   const openWebRTC = async () => {
     const temp_stream = await navigator.mediaDevices.getUserMedia({
@@ -105,6 +105,6 @@ const Header = (props: any) => {
       </div>
     </div>
   )
-}
+})
 
 export default Header;

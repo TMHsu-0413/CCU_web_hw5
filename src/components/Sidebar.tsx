@@ -1,8 +1,8 @@
-import React from "react";
+import React, {memo} from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
-const Sidebar = () => {
+const Sidebar = memo(() => {
   const navigate = useNavigate()
   const { users }: any = useUser()
 
@@ -18,6 +18,6 @@ const Sidebar = () => {
       })}
     </div>
   )
-}
+})
 
 export default Sidebar
