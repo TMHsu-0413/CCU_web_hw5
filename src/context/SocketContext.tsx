@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useState, useMemo, useCallback } from "react";
+import React, { createContext, useMemo, useContext, useState } from "react";
 import { Socket } from "socket.io";
+import { io } from "socket.io-client";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 interface SocketContextData {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>,
-  setSocket : any,
   myPeer: any,
   setPeer: any
 }
@@ -14,12 +14,13 @@ interface SocketProviderProps {
   children: React.ReactNode
 }
 export const SocketProvider = ({ children }: SocketProviderProps) => {
-  const [socket,setSocket] = useState()
-  const [myPeer,setPeer] = useState()
+  const socket = useMemo(() => {
+    return io(process.env.REACT_APP_BACK)
+  },[])
+  const [myPeer, setPeer] = useState()
   // 連接視訊的peer
   const value: any = {
     socket,
-    setSocket,
     myPeer,
     setPeer
   }

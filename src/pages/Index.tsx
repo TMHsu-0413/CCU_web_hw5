@@ -3,14 +3,12 @@ import { Peer } from 'peerjs'
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from "../context/SocketContext";
 import { useUser } from "../context/UserContext";
-import { io } from "socket.io-client";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { setSocket, setPeer } = useSocket()
+  const { socket, setPeer } = useSocket()
   const { setUsers }: any = useUser()
   const inputRef = useRef<HTMLInputElement>(null);
-  const socket = io(process.env.REACT_APP_BACK)
   useEffect(() => {
     socket.on("connect", () => {
       console.log(`You connected with id: ${socket.id}`)
@@ -20,7 +18,6 @@ const Index = () => {
         host: 'localhost',
         port: 4000
       })
-      setSocket(socket)
       setPeer(newPeer)
     })
   }, [])

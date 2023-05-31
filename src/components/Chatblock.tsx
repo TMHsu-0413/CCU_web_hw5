@@ -25,7 +25,7 @@ const Chatblock = memo(() => {
           }
           var img = document.createElement('img')
           img.className = "w-6 inline-block"
-          img.src = process.env.REACT_APP_BACK + '/' + emoji_name + '.png'
+          img.src = process.env.REACT_APP_BACK + emoji_name + '.png'
           div.append(img)
         }
         else
@@ -66,7 +66,7 @@ const Chatblock = memo(() => {
           }
           var img = document.createElement('img')
           img.className = "w-6 inline-block"
-          img.src = process.env.REACT_APP_BACK + '/' + emoji_name + '.png'
+          img.src = process.env.REACT_APP_BACK + emoji_name + '.png'
           messageDiv.append(img)
         }
         else
@@ -161,7 +161,7 @@ const Chatblock = memo(() => {
       textRef.current.value += "[" + name.split('.')[0] + "] "
     }
 
-    fetch(process.env.REACT_APP_BACK + '/emoji', { method: "GET" }).then((res: any) => {
+    fetch(process.env.REACT_APP_BACK + 'emoji', { method: "GET" }).then((res: any) => {
       return res.json()
     }).then((emoji) => {
       const emojiList = emojiRef.current
@@ -173,7 +173,7 @@ const Chatblock = memo(() => {
           handleEmoji(name)
         }
         const img = document.createElement('img')
-        img.src = process.env.REACT_APP_BACK + '/' + name;
+        img.src = process.env.REACT_APP_BACK +  name;
         img.className = "w-6"
         button.append(img)
         emojiList.appendChild(button)

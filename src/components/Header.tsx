@@ -23,10 +23,10 @@ const Header = memo((props: any) => {
         setStream(undefined)
       }
     }
-  }, [id,stream])
+  }, [id, stream])
 
   const addVideoStream = (video: any, curstream: any) => {
-    if(video.paused){
+    if (video.paused) {
       video.srcObject = curstream
       video.play()
     }
@@ -40,24 +40,24 @@ const Header = memo((props: any) => {
 
     addVideoStream(localVideoRef.current, temp_stream)
 
-    myPeer.on('call', (call:any) => {
+    myPeer.on('call', (call: any) => {
       call.answer(temp_stream)
 
-      call.on('stream',(userVideoStream:any) => {
-        addVideoStream(remoteVideoRef.current,userVideoStream)
+      call.on('stream', (userVideoStream: any) => {
+        addVideoStream(remoteVideoRef.current, userVideoStream)
       })
     })
 
-    const call = myPeer.call(id,temp_stream)
+    const call = myPeer.call(id, temp_stream)
 
-    call.on('stream',(userVideoStream:any) => {
-      addVideoStream(remoteVideoRef.current,userVideoStream)
+    call.on('stream', (userVideoStream: any) => {
+      addVideoStream(remoteVideoRef.current, userVideoStream)
     })
-    
+
     call.on('close', () => {
       remoteVideoRef.current.pause()
     })
-    
+
     setStream(temp_stream)
   }
 
@@ -100,7 +100,7 @@ const Header = memo((props: any) => {
       {Chat === 'One' && stream !== undefined && audio === false && <button onClick={openAudioOnly}><BsMicMuteFill /></button>}
       {Chat === 'One' && stream !== undefined && audio === true && <button onClick={closeAudioOnly}><BsMicFill /></button>}
       <div id="video-grid" className="flex ml-auto gap-2">
-        <video ref={localVideoRef} className="w-52" muted/>
+        <video ref={localVideoRef} className="w-52" muted />
         <video ref={remoteVideoRef} className="w-52" id="remote" />
       </div>
     </div>
